@@ -1,0 +1,234 @@
+<html>
+<head>
+<title>A JavaScript Block Cipher Implementation</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    A JavaScript Block Cipher Implementation
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                        Dec31,2008
+
+This is a library which implements block cipher algorithms Serpent, Twofish
+and Rijndael.  This library contains some classes which encrypt/decrypt
+binary representation messages in byte arrays.
+
+
+--- USAGE ---
+================================================================================
+
+Link
+    Cipher.js depends on two script files "packages.js" and "binary.js".
+
+        &lt;script src="./tools/packages.js"&gt;&lt;/script&gt;
+        &lt;script src="./tools/binary.js"&gt;&lt;/script&gt;
+        &lt;script src="./cipher/Cipher.js"&gt;&lt;/script&gt;
+
+Import
+    After include Cipher.js, it is necessary to import the main class.
+
+        var Cipher = __import( "titaniumcore.crypto.Cipher" );
+
+Create
+    There are two factory methods.
+
+    Cipher.algorithm( algorithm )
+        This method creates a simple object which only encrypts or decrypts
+        a block. "algorithm" parameter specifies an algorithm name. The
+        parameter can be one of these constant values:
+
+            Cipher.RIJNDAEL
+            Cipher.SERPENT
+            Cipher.TWOFISH
+        
+        The object which this method creates has the following methods.
+
+            open(key)
+                Declares beginning of encryption or decryption. "key"
+                parameter specifies an array object which contains key bytes.
+
+                    open( 
+                        [ 0xfe,0x3d,0x39,0x6e,0x55,0x7f,0x29,0xe5,
+                        0x02,0xed,0xca,0x69,0x33,0x68,0xbe,0xdd ] 
+                    );
+            close()
+                Declares encryption or decryption processing is finished.
+
+            encrypt( data, offset )
+                Encrypt a block. "data" parameter specifies the data.
+                "offset" parameter specifies the start offset of the block
+                to be encrypted.
+                
+            decrypt( data, offset )
+                Decrypt a block. "data" parameter specifies the data.
+                "offset" parameter specifies the start offset of the block
+                to be decrypted.
+
+    Cipher.create( algorithm, direction, mode, padding )
+        
+        This method creates a full-functioned object which encrypts or
+        decrypts a binary data array as sequential data blocks with block
+        cipher mode of operation and padding operation.
+
+        Parameters
+            The parameters can be null. In such case a default value will be
+            applied.
+
+            algorithm
+                Specifies a block cipher algorithm. The value must be one of
+                following constants.
+
+                    Cipher.RIJNDAEL
+                    Cipher.SERPENT
+                    Cipher.TWOFISH
+
+                default value : Cipher.RIJNDAEL 
+            direction
+                Specifies either the object encrypts or decrypts. The value
+                must be one of following constants:
+
+                    Cipher.ENCRYPT
+                    Cipher.DECRYPT;
+
+                default value : Cipher.ENCRYPT
+            mode
+                Specifies a block cipher mode. The value must be one of
+                following constants:
+
+                    Cipher.ECB
+                    Cipher.CBC
+                    Cipher.CFB
+                    Cipher.OFB
+                    Cipher.CTR
+
+                Though only ECB and CBC are supported now.
+                CFB, OFB and CTR are not supported in this version.
+
+                default value : Cipher.CBC
+            padding
+                Specifies a padding algorithm. The value must be one of
+                following constants:
+
+                    Cipher.RFC1321
+                    Cipher.ANSIX923
+                    Cipher.ISO10126
+                    Cipher.PKCS7
+
+                default value :Cipher.PKCS7
+
+        Methods
+            The object that Cipher.create() returns has the following methods.
+
+            open( keyBytes, dataBytes )
+                Declares beginning of encryption or decryption. "keyBytes"
+                parameter specifies an array object which contains key
+                bytes. "dataBytes" specifies the data to be encrypted or
+                decrypted.
+
+            operate()
+                Process encryption or decryption for a block and advance
+                current offset to the next block. Returns a number of bytes
+                remaining. The Return value will be 0 if the process is
+                completed.
+
+            close()
+                Declares encryption or decryption processing is finished.
+                Returns the encrypted or decrypted data.
+
+            execute( keyBytes, dataBytes )
+                Automatically encrypts or decrypts in an action.  This
+                method produces exactly same result as the following code.
+
+                    this.open( keyBytes, dataBytes );
+                    while( 0&lt;this.operate() ) {}
+                    return this.close();
+
+
+
+--- APPENDIX ---
+================================================================================
+
+--- Padding Algorithms ---
+
+Refference : <a href="http://en.wikipedia.org/wiki/Padding_(cryptography)">http://en.wikipedia.org/wiki/Padding_(cryptography)</a>
+
+    RFC1321
+        DD DD DD DD DD DD DD DD  DD DD DD 80 00 00 00 00
+
+    ANSIX923
+        DD DD DD DD DD DD DD DD  DD DD DD DD 00 00 00 04
+
+    ISO10126
+        DD DD DD DD DD DD DD DD  DD DD DD DD 81 A6 23 04
+
+    PKCS7
+        DD DD DD DD DD DD DD DD  DD DD DD DD DD DD DD 01
+        DD DD DD DD DD DD DD DD  DD DD DD DD DD DD 02 02
+        DD DD DD DD DD DD DD DD  DD DD DD DD DD 03 03 03
+        DD DD DD DD DD DD DD DD  DD DD DD DD 04 04 04 04 
+        DD DD DD DD DD DD DD DD  DD DD DD 05 05 05 05 05 
+
+
+================================================================================
+
+The core logic of this library comes from a program that is written by
+Michiel van Everdingen.
+
+    The original form can be referred at 
+        <a href="http://home.versatel.nl/MAvanEverdingen/Code/code.html">http://home.versatel.nl/MAvanEverdingen/Code/code.html</a> .
+
+    Contact of the Author
+        Michiel van Everdingen
+        <a href="http://home.versatel.nl/MAvanEverdingen/index.html">http://home.versatel.nl/MAvanEverdingen/index.html</a>
+
+
+I , Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ] has done the forllowing work:
+
+    - Extract cryptographic routines from the program.
+    - Resolve some dependencies in the subroutine.
+    - Make these routine as an independent library.
+    - Add Object-Oriented interfaces.
+    - Add package management function.
+    - Apply "Known Answer Test" (KAT) on them.
+    - Apply "Monte-Carlo Test" (MCT) on them. 
+    - Compare these result with result of a Java block cipher implementation.
+
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

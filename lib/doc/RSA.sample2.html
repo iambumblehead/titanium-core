@@ -1,0 +1,367 @@
+<html>
+    <head>
+	<title>JavaScript Asynchronous RSA Encryption/Decryption Implementation - Titaniumcore Project</title>
+	<script src="../tools/packages.js"></script>
+	<script src="../tools/isarray.js"></script>
+	<script src="../tools/binary.js"></script>
+	<script src="../tools/elapse.js"></script>
+
+	<script src="../tools/trace.async.js"></script>
+	<script src="../nonstructured/nonstructured.js"></script>
+
+	<script src="SecureRandom.js"></script>
+	<script src="BigInteger.init1.js"></script>
+	<script src="BigInteger.init2.js"></script>
+	<script src="BigInteger.init3.js"></script>
+	<script src="RSA.init1.js"></script>
+	<script src="RSA.init2.js"></script>
+	<script src="RSA.init3.js"></script>
+
+	<script src="Cipher.js"></script>
+	<script src="SOAEP.js"></script>
+	<script src="BitPadding.js"></script>
+	<script src="RSAKeyFormat.js"></script>
+	<script src="RSAMessageFormat.js"></script>
+	<script src="RSAMessageFormatSOAEP.js"></script>
+	<script src="RSAMessageFormatBitPadding.js"></script>
+
+	<script>
+	    __unit( "RSA.sample2.html" );
+
+	    __uses( "packages.js" );
+	    __uses( "RSAKeyFormat.js" );
+	    __uses( "RSAMessageFormat.js" );
+	    __uses( "RSAMessageFormatSOAEP.js" );
+	    __uses( "RSAMessageFormatBitPadding.js" );
+	    __uses( "RSA.init1.js" );
+	    __uses( "RSA.init2.js" );
+
+	    var RSA = __import( this, "titaniumcore.crypto.RSA" );
+	    var RSAMessageFormatSOAEP = __import( this, "titaniumcore.crypto.RSAMessageFormatSOAEP" );
+	    var RSAMessageFormatBitPadding = __import( this, "titaniumcore.crypto.RSAMessageFormatBitPadding" );
+            var RSAKeyFormat = __import( packageRoot, "titaniumcore.crypto.RSAKeyFormat" );
+
+            // install key format.
+            RSA.installKeyFormat( RSAKeyFormat )
+            RSA.installMessageFormat( RSAMessageFormatSOAEP );
+
+	    var defaultText = "HELLO,WORLD!:-) HELLO,WORLD!:-) HELLO,WORLD!:-) HELLO,WORLD!:-) HELLO,WORLD!:-) HELLO,WORLD!:-) HELLO,WORLD!:-) HELLO,WORLD!:-) ";
+
+	    function stringBreak(s,col) {
+		var result = "";
+		for ( var i=0; i<s.length; i++ ) {
+		    result += s.charAt( i );
+		    if ( ( (i+1) % col == 0 ) && ( 0<i )) {
+			result += "\n";
+		    }
+		}
+		return result;
+	    }
+	    function pack(s) {
+		var result = "";
+		for ( var i=0; i<s.length; i++ ) {
+		    var c = s.charAt( i );
+		    if ( c==" " || c=="\t" || c=="\r" || c=="\n" ) {
+		    } else {
+			result += c;
+		    }
+		}
+		return result;
+	    }
+
+	    function outputToInput() {
+		document.form1.input.value = document.form1.output.value;
+		document.form1.output.value = "";
+	    }
+	    function resetText() {
+		var text = defaultText;
+		if ( document.form1.publicKey.value !="" ) {
+                    var length = readPublicKey( createRSA()  ).publicEncryptMaxSize();
+		    text = text.substring( 0, length );
+		} else if ( document.form1.privateKey.value !="" ) {
+                    var length = readPrivateKey( createRSA() ).privateEncryptMaxSize();
+		    text = text.substring( 0, length );
+		} else {
+		    text = "Please try RSA Key Generation Demo at first.";
+		}
+		document.form1.input.value = text;
+		document.form1.output.value = "";
+	    }
+	    function parse_querystring( func ) { 
+		var s = window.location.search.substring( 1 );
+		var lst = s.split('&');
+		for ( var i=0; i<lst.length; i++ ) {
+		    var item = lst[i].split( "=" );
+		    func( item[0], item[1],i );
+		}
+	    }
+	    function initialize() {
+		var f = function( key,value,i ) {
+		    if ( key == "i" ) {
+			document.form1.input.value = value;
+		    }
+		    if ( key == "o" ) {
+			document.form1.output.value = value;
+		    }
+		    if ( key == "pr" ) {
+			// var keys = decodePrivateKey( base64x_decode( value ) );
+			// document.form1.publicKey.value = base64_encode( encodePublicKey( keys.n, keys.e ) );
+			// document.form1.privateKey.value = base64_encode( encodePrivateKey( keys.n, keys.e, keys.d ) );
+			document.form1.privateKey.value = value;
+		    }
+		    if ( key == "pu" ) {
+			// document.form1.publicKey.value = base64x_preencode( value );
+			document.form1.publicKey.value = value;
+		    }
+		    if ( key == "e" ) {
+			document.form1.exponent.value = value;
+		    }
+		    if ( key == "pa" ) {
+			if ( value == '0' ) {
+			    document.form1.requirePaddingCheckbox.checked = false;
+			} else {
+			    document.form1.requirePaddingCheckbox.checked = true;
+			}
+		    }
+		};
+		parse_querystring(f);
+		if (document.form1.input.value == "" ) {
+		    resetText();
+		}
+	    }
+
+            function createRSA() {
+                var rsa = new RSA();
+		if ( document.form1.requirePaddingCheckbox.checked ) {
+                    rsa.messageFormat = RSAMessageFormatSOAEP;
+		} else {
+                    rsa.messageFormat = RSAMessageFormatBitPadding;
+		}
+                return rsa;
+            }
+            function readPublicKey( rsa ) {
+                rsa.publicKeyBytes( base64x_decode( document.form1.publicKey.value ) );
+                return rsa;
+            }
+            function readPrivateKey( rsa ) {
+                rsa.privateKeyBytes( base64x_decode( document.form1.privateKey.value ) );
+                return rsa;
+            }
+
+	    function publicCheckEncryption(rsa){
+		var maxsize= rsa.publicEncryptMaxSize();
+		var size = str2utf8( document.form1.input.value ).length;
+		if ( maxsize < size ) {
+		    alert( "text length ("+size+") exceeds the maximum length("+maxsize+") for this RSA key" );
+		    return false;
+		}
+		return true;
+	    }
+	    function privateCheckEncryption(rsa){
+		var maxsize = rsa.privateEncryptMaxSize();
+		var size = str2utf8( document.form1.input.value ).length;
+		if ( maxsize < size ) {
+		    alert( "text length ("+size+") exceeds the maximum length("+maxsize+") for this RSA key" );
+		    return false;
+		}
+		return true;
+	    }
+
+	    function _publicEncrypt() {
+                var rsa = readPublicKey( createRSA() );
+		if ( ! publicCheckEncryption(rsa) ) {
+		    return;
+		}
+		try {
+                    document.form1.output.value = base64x_encode( rsa.publicEncrypt( document.form1.input.value ) );
+		} catch ( e ) {
+		     alert(e);
+		}
+	    }
+	    function _publicDecrypt() {
+                var rsa = readPublicKey( createRSA() );
+		try {
+                    document.form1.output.value = utf82str( rsa.publicDecrypt( document.form1.input.value ) );
+		} catch ( e ) {
+		     alert(e);
+		}
+	    }
+	    function _privateProgress() {
+		rotateRadio();
+	    }
+	    function _privateEncryptResult(value) {
+		document.form1.output.value = base64x_encode( value );
+	    }
+	    function _privateDecryptResult(value) {
+		document.form1.output.value = utf82str( value );
+	    }
+	    function _privateDone() {
+	    }
+	    function _privateEncrypt() {
+                var rsa = createRSA();
+                readPrivateKey(rsa);
+		if ( ! privateCheckEncryption(rsa) ) {
+		    return;
+		}
+		try {
+                    rsa.privateEncryptAsync( document.form1.input.value, _privateProgress, _privateEncryptResult,_privateDone );
+		} catch ( e ) {
+		     alert(e);
+		}
+	    }
+	    function _privateDecrypt() {
+                var rsa = createRSA();
+                readPrivateKey(rsa);
+		try {
+                    rsa.privateDecryptAsync( document.form1.input.value, _privateProgress, _privateDecryptResult,_privateDone );
+		} catch ( e ) {
+		     alert(e);
+		}
+	    }
+
+	    // screen control
+	    var radioIndex=0;
+	    var radioCount = 4;
+	    function rotateRadio(){
+		radioIndex = ( radioIndex +1 ) % 4;
+		for ( var i=0; i<radioCount; i++ ) {
+		    document.form1["r"+i].checked = false;
+		}
+		document.form1["r"+radioIndex].checked = true;
+	    }
+	</script>
+	<style>
+	    h1 {
+		font-size:20px;
+	    }
+	    h2 {
+		font-size:18px;
+	    }
+	    hr { 
+		border: 0px none white;
+		color:white;
+		border-bottom : 1px dashed silver; 
+		background-color : white;
+		margin:20px;
+	    }
+	    blockquote {
+		border : 0px;
+		margin : 0px;
+		margin-left : 50px;
+	    }
+	</style>
+    </head>
+    <body onLoad="initialize()">
+	<h1>A JavaScript Implementation of RSA public-key cryptography - DEMO</h1>
+	<b>Written by <a href="http://oka.nu/">Atsushi Oka</a></b>
+	<ul>
+	    <li>Before use this demo, try <a href="RSA.sample1.html">Asynchronous RSA key Generator</a> to get a RSA key.</li>
+	    <li>Supports UTF-8 Character Encoding</li>
+	    <li><a href="#instruction">Instruction Below</a></li>
+	</ul>
+	<form name="form1" >
+	    <b>Input</b><br>
+	    <blockquote>
+	    <textarea name="input" style="width:500px; height:100px"></textarea>
+	    </blockquote>
+	    <br>
+
+	    <b>Public Key</b>
+	    <blockquote>
+	    <input type="text" name="publicKey" value="" style="width:500px;" >
+	    <input type="button" name="buttonPublicEncrypt" value="Encrypt" onClick="_publicEncrypt()">
+	    <input type="button" name="copyToInput" value="Swap" onClick="outputToInput();" style="position:relative; top:30px;">
+	    <input type="button" name="buttonPublicDecrypt" value="Decrypt" onClick="_publicDecrypt()">
+	    <input type="button" name="resetAll1" value="Reset" onClick="resetText();">
+	    </blockquote>
+	    <br>
+
+	    <b>Private Key</b>
+	    <blockquote>
+	    <input type="text" name="privateKey" value="" style="width:500px;" >
+	    <input type="button" name="buttonPrivateEncrypt" value="Encrypt" onClick="_privateEncrypt()">
+	    <input type="button" name="copyToInput" value="Swap" onClick="outputToInput();" style="position:relative; top:-35px;visibility:hidden;">
+	    <input type="button" name="buttonPrivateDecrypt" value="Decrypt" onClick="_privateDecrypt()">
+	    <input type="button" name="resetAll2" value="Reset" onClick="resetText();">
+	    </blockquote>
+	    <br>
+	    <b>Padding (SOAEP)</b>
+	    <blockquote>
+	    <input type="checkbox" name="requirePaddingCheckbox" value="yes" checked >Pad text data with SOAEP
+	    </blockquote>
+	    <br>
+	    <b>Exponent</b>
+	    <blockquote>
+	    <select name="exponent">
+		<option value="3">3</option>
+		<option value="5">7</option>
+		<option value="7">7</option>
+		<option value="11">11</option>
+		<option value="13">13</option>
+		<option value="17">17</option>
+		<option value="19">19</option>
+		<option value="65537" selected>65537</option>
+	    </select>
+	    </blockquote>
+	    <br>
+
+	    <b>Output</b>
+	    <input type="radio" name="r0" value="0" >
+	    <input type="radio" name="r1" value="1" >
+	    <input type="radio" name="r2" value="2" >
+	    <input type="radio" name="r3" value="3" >
+	    <br>
+	    <blockquote>
+	    <textarea name="output" style="width:500px; height:100px"></textarea>
+	    </blockquote>
+	</form>
+	    <hr>
+	    <a name="instruction"></a>
+	    <b>Instruction</b>
+	    <blockquote>
+	    <dl>
+		<dt>
+		    - Input a text message to the upper textarea.
+		</dt>
+		<dt>
+		    - Click a "Encrypt" button and get an encrypted message on the lower textarea.
+		</dt>
+		<dt>
+		    - Copy and paste the encrypted message to the upper textarea. ( simply use "Swap" button.)
+		</dt>
+		<dt>
+		    - Click a "Decrypt" button and get a decrypted message on the lower textarea.
+		</dt>
+		<dt>
+		    - Feel great pleasure.
+		</dt>
+		<dt>
+		    - The button which is next to the public key input field encrypts the message by the public key. Decrypt button works in the same manner.
+		</dt>
+		<dt>
+		    - The button which is next to the private key input field encrypts the message by the private key.  Decrypt button works in the same manner.
+		</dt>
+		<dt>
+		    - Note that a message which is encrypted by a private key, is a digital signature.
+		</dt>
+		<dt>
+		    - There are two "Reset" button. There is no difference between them. That just saves the distance of mouse movement.
+		</dt>
+	    </dl>
+	    </blockquote>
+	    <hr>
+	<b> Contacts </b><br>
+	<blockquote>
+	<a href="http://oka.nu">Atsushi Oka</a>
+	</blockquote>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<p></p>
+	<p></p>
+	<p></p>
+	<p></p>
+    </body>
+</html>

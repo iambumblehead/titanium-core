@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>Titaniumcore RSA Encryption Scheme</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    Titaniumcore RSA Encryption Scheme
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                        Jan 8,2009
+
+
+This script defines RSAMessageFormat class that implements an RSA message
+encryption scheme - Titaniumcore RSA Encryption Scheme.
+
+
+Link
+    &lt;script src="./tools/packages.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/SecureRandom.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init1.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init2.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSA.init1.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSA.init2.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/SOAEP.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/BitPadding.js" &gt;&lt;/script&gt;
+    &lt;script src="./tools/binary.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSAMessageFormat.js"&gt;&lt;/script&gt;
+
+Import
+    var RSAMessageFormat = __import( this, "titaniumcore.crypto.RSAMessageFormat" );
+
+
+Constructor
+    new RSAMessageFormat( paddingScheme )
+
+        paddingScheme : a PaddingScheme object.  see <a href="./PaddingScheme.interface.txt">PaddingScheme.interface.txt</a>
+
+Interface
+    RSAMessageFormat implements MessageFormat interface.
+    See <a href="./MessageFormat.interface.txt">MessageFormat.interface.txt</a>
+
+
+================================================================================
+
+// vim:ts=8:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

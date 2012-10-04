@@ -1,0 +1,178 @@
+<html>
+<head>
+<title>Sub-Optimal Asymmetric Encryption Padding</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    Sub-Optimal Asymmetric Encryption Padding
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                       Jan 10,2009
+
+
+INTRODUCTION
+    Sub-Optimal Asymmetric Encryption Padding(SOAEP) is a padding scheme for
+    RSA encryption which I designed. SOAEP is based on OAEP.  The main
+    difference is : OAEP uses cryptographic hash function to make the
+    message probabilistic.  SOAEP uses block-cipher algorithm instead of it.
+
+    There is no proof or evidence that this idea works as well as OAEP but
+    it probably works as well because basically SOAEP shares same idea with
+    OAEP. And perhaps SOAEP is more secure than OAEP since it uses a
+    block-cipher algorithms instead of hash functions. It is probably slower
+    than OAEP since SOAEP needs more complex calculation.
+
+    The purpose of designing new RSA encryption padding scheme is firstly
+    just simplification. I just want to make everything simplify and easy to
+    understand in order to full-implement by myself. 
+
+    Second, I feel strange that OAEP encrypts messages by XORing with a
+    result of a hash function. I feel that it is more direct to encrypt it
+    by a block-cipher algorithm. Though I am not sure it is really better or
+    not since I am no a cryptographer.
+    
+    At last, And I also intend to make the specification under my control to
+    convey some compatibilities to other schemes in Titaniumcore project. 
+
+    In this document, I present a description of the algorithm. I also
+    present an JavaScript implementation which you can refer in the attached
+    file <a href="./SOAEP.js">SOAEP.js</a>.
+
+
+
+DESCRIPTION OF THE ALGORITHM
+    - M is a message.
+    - L is length of the RSA key modulus.
+    - BL is block length which is an arbitrary divisor of L.
+    - D is a buffer which length is L.
+
+    Assume the D is divided into blocks in which each block's length is BL.
+
+    v0                                  v(L-2BL)    v(L-BL)     v(L)
+  D |-----------|-----------|-----------|-----------|-----------|
+      BLOCK(1)    BLOCK(2)    BLOCK(N-2)  BLOCK(N-1)  BLOCK(N) 
+
+    |-----------MESSAGE---------|&lt;0x80&gt;&lt;---ZERO----&gt;|---RANDOM--|
+
+
+    ENCRYPTION
+
+    1. Generate a random string token R which length is B. Then copy it to BLOCK(N).
+    2. Copy the message M to D from index 0.
+    3. (Optional) Write 0x80 the end position of the message as bit-padding-scheme.
+    4. Fill 0 on the rest of the buffer.
+
+    5. Encrypt D. Use BLOCK(N) as a key. Start encryption from BLOCK(N-1) and direct to
+       BLOCK(1) with CBC mode. Use BLOCK(N-1) as an initialization vector.
+
+    6. Encrypt D again. Use BLOCK(1) as a key. Start encryption from BLOCK(2)
+       and end in BLOCK(N) with CBC mode. Use BLOCK(1) as an initialization vector.
+
+
+    DECRYPTION
+
+    1. Decrypt from BLOCK(2) to BLOCK(N) with CBC mode. Use BLOCK(1) as a key.
+    2. Decrypt from BLOCK(N-1) to BLOCK(1) with CBC mode. Use BLOCK(N) as a key.
+    3. (Optional) Look up 0x80 from (L-BL) and direct to 0. When it found 0x80,
+       clip the message from 0 to the position.
+
+
+    RESTRICTION
+
+    - length of the message has to be equal or less than (L - BL - 1). 
+      The -1 is only necessary when bit-padding-scheme is enabled.
+
+    - L must always be a multiple of BL. For example, when the block-cipher
+      algorithm is AES, L is always one of multiple of 16.
+
+
+IMPLEMENTATION
+    There is an implementation by JavaScript. 
+
+    <a href="./SOAEP.js">SOAEP.js</a>
+
+        SOAEP class implements interface PaddingScheme.
+        See <a href="./PaddingScheme.interface.txt">PaddingScheme.interface.txt</a>
+        
+        class SOAEP()
+            The main class.
+        
+        SOAEP.create( random, algorithm )
+            A factory method.  Returns an instance of SOAEP class.
+
+            Parameter random :
+                An instance of SecureRandom class.
+            Parameter algorithm :
+                Pass an object from a result of Cipher.algorithm() method.
+        
+        SOAEP.encode(input,length)
+            Encode a message. 
+
+            Parameter input : 
+                A message which is an Array object that contains byte values
+                of binary representation.
+            Parameter length :
+                Length that the encoded message is supposed to be.
+
+        SOAEP.decode(input)
+            Decode a message. 
+
+
+        SOAEP.maxsize( length )
+            Calculate the maximum length of the internal message in which
+            the encrypted message can contain.
+
+            Parameter : length 
+                Length that the encoded message supposed to be.
+
+        SOAEP.blocksize()
+            Returns block size, namely BL. This method delegate the length
+            of current cipher algorithm.
+
+
+FURTHER WORK
+      
+    I am not a cryptographer so I am not sure it is really secure.
+    Especially I am not sure if it is dangerous to share a same random
+    string by key and iv in the same session.  Further studying about this
+    scheme is necessary.
+
+
+================================================================================
+
+// vim:ts=8:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

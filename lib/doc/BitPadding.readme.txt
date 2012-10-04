@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>Bit-Padding</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    Bit-Padding
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                        Jan 8,2009
+
+This is a class which pads a variable length text message into fixed length
+message by bit-padding-scheme. 
+
+    <a href="http://www.faqs.org/rfcs/rfc1321.html">http://www.faqs.org/rfcs/rfc1321.html</a>
+
+Link
+    &lt;script src="./cipher/BitPadding.js"&gt;&lt;/script&gt;
+
+Import
+    var BitPadding = __import( this, "titaniumcore.crypto.BitPadding" );
+
+Note
+    BitPadding class implements interface PaddingScheme.
+    See <a href="./PaddingScheme.interface.txt">PaddingScheme.interface.txt</a>
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

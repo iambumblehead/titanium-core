@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>SHA</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    SHA
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                       Jan 11,2009
+
+SHA class is a class to calculate SHA hash value.
+
+Linking
+    HTML
+        &lt;script src="./tools/packages.js"&gt;&lt;/script&gt;
+        &lt;script src="./tools/binary.js"&gt;&lt;/script&gt;
+        &lt;script src="./cipher/jsSHA.js"&gt;&lt;/script&gt;
+        &lt;script src="./cipher/SHA.js"&gt;&lt;/script&gt;
+
+    ActionScript
+        #include "./tools/packages.js"
+        #include "./tools/binary.js"
+        #include "./cipher/jsSHA.js"
+        #include "./cipher/SHA.js"
+
+Import
+    var SHA = __import( this,"titaniumcore.crypto.SHA" );
+
+
+Example
+    var sha = SHA.create( "SHA-1" );
+    var result = sha.hash( [ 0x00, 0x00, 0x00, 0x00 ] );
+    alert( result.join(" ") );
+
+
+Reference
+
+    SHA.create( type_name )
+        A factory method.  The parameter type_name Specifies hash name.
+        Available names are :
+            "SHA-1", "SHA-224", "SHA-256","SHA-384" and "SHA-512"
+        Otherwise throws an error. Returns an SHA object.
+
+    SHA.prototype.hash( message );
+        Calculate a hash value. The parameter message specifies an array
+        object that contains byte values to be hashed. Returns an array object.
+
+
+
+Acknowledgment
+================================================================================
+
+    The core calculation routines of this class use "jsSHA.js".
+    See <a href="./jsSHA.readme.txt">jsSHA.readme.txt</a> for further information.
+
+    Special Thanks to Mr.Brian Turek!
+    <a href="http://sourceforge.net/users/caligatio">http://sourceforge.net/users/caligatio</a>
+
+
+================================================================================
+
+// vim:ts=8:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<html>
+<head>
+<title>interface PaddingScheme</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    interface PaddingScheme
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                      Jan 15,2009
+
+
+This document describes about PaddingScheme interface.
+
+Currently there are two classes implement this interface.
+See <a href="./BitPadding.readme.txt">BitPadding.readme.txt</a>
+    <a href="./SOAEP.readme.txt">SOAEP.readme.txt</a>
+
+For further information of the interface files, see <a href="./readme.interface.txt">readme.interface.txt</a>.
+
+
+    /**
+     * PaddingScheme - An interface for SOAEP and BitPadding 
+     */
+    interface PaddingScheme {
+        /**
+         * encode a binary string in a byte array.
+         *
+         * "length" specifies the length the encoded binary string is supposed
+         * to be.  If "length" is null, it will automatically calculate
+         * the nearest sufficient length for the length of input data.
+         */
+        byte[] encode( byte[] input, int length );
+
+
+        /**
+         * decode a binary string in a byte array.
+         */
+        byte[] decode( byte[] input );
+
+
+        /**
+         * maxsize() method returns the maximum length of content inside the
+         * specified length of a container.
+         *
+         * |--------------------- length ----------------------------------|
+         * |AC 94 98 3D E8 CD A9 59 AC 94 00 00 00 00 00 00 00 00 00 00 00 |
+         * |---      DATA LENGTH    ----|-------     PADDING          -----|
+         * 
+         * The padding has a limitation for the least size. 
+         * This method returns length - (the least size of padding).
+         */
+        int maxsize( int length );
+
+
+        /**
+         * blocksize() method returns a number of padding-scheme's block size.
+         * the length of encoded data should be a multiply of this number.
+         */
+        int blocksize();
+    }
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

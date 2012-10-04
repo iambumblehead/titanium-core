@@ -1,0 +1,101 @@
+<html>
+<head>
+<title>RSA Encryption/Decryption Scheme</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    RSA Encryption/Decryption Scheme
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                        Jan 8,2009
+
+
+RSAMessageFormatSOAEP class and RSAMessageFormatBitPadding class define several
+methods which encrypt/decrypt messages with Titaniumcore RSA Encryption Scheme. 
+
+RSAMessageFormatSOAEP encrypts/decrypts with SOAEP.  RSAMessageFormatBitPadding
+works as well as RSAMessageFormatSOAEP except it uses Bit-Padding-Scheme instead of
+SOAEP.
+
+They inherit main functions from RSAMessageFormat class.
+See <a href="./RSAMessageFormat.readme.txt">RSAMessageFormat.readme.txt</a>
+
+
+Link
+    &lt;script src="./tools/packages.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/SecureRandom.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init1.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init2.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSA.init1.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSA.init2.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/SOAEP.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/BitPadding.js" &gt;&lt;/script&gt;
+    &lt;script src="./tools/binary.js" &gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSAMessageFormat.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSAMessageFormatSOAEP.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSAMessageFormatBitPadding.js"&gt;&lt;/script&gt;
+
+Import
+    var RSAMessageFormatSOAEP = __import( this, "titaniumcore.crypto.RSAMessageFormatSOAEP" );
+    var RSAMessageFormatBitPadding = __import( this,"titaniumcore.crypto.RSAMessageFormatBitPadding" );
+
+
+Constructor
+    This class is a static class. Do not instantiate this class.
+
+
+Example
+    // Set the default encryption scheme for all RSA objects to SOAEP.
+    RSA.installMessageFormat( RSAMessageFormatSOAEP );
+
+    // Set the default encryption scheme for all RSA objects to BitPadding.
+    RSA.installMessageFormat( RSAMessageFormatBitPadding );
+
+    // Create a new RSA object.
+    var rsa = new RSA();
+
+    // Set its encryption scheme to SOAEP.
+    rsa.messageFormat = RSAMessageFormatSOAEP;
+
+    // Set its encryption scheme to BitPadding.
+    rsa.messageFormat = RSAMessageFormatBitPadding;
+
+
+================================================================================
+
+// vim:ts=8:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

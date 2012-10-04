@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>interface KeyFormat</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    interface KeyFormat
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                      Jan 15,2009
+
+
+This document describes about KeyFormat interface. 
+For further information of the interface files, see <a href="./readme.interface.txt">readme.interface.txt</a>.
+
+    /**
+     * KeyFormat interface.
+     * Converts RSA public/private keys into byte arrays and vice versa.
+     */
+    interface KeyFormat {
+        byte[] encodePublicKey( BigInteger n, int e, int ksize );
+        byte[] encodePrivateKey( BigInteger n, int e, BigInteger d, int ksize );
+        Key decodePublicKey( byte[] value );
+        Key decodePrivateKey( byte[] value );
+    }
+
+    interface Key {
+        BigInteger n;
+        int e;
+        BigInteger d;
+        int ksize;
+    }
+
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

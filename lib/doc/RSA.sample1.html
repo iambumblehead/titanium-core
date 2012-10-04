@@ -1,0 +1,387 @@
+<html>
+    <head>
+	<title>JavaScript Asynchronous RSA Key Generation Implementation - Titaniumcore Project</title>
+	<script src="../tools/packages.js"></script>
+	<script src="../tools/isarray.js"></script>
+	<script src="../tools/binary.js"></script>
+	<script src="../tools/elapse.js"></script>
+	<script src="../tools/trace.async.js"></script>
+
+	<script src="BigInteger.init1.js"></script>
+	<script src="RSA.init1.js"></script>
+	<script src="SecureRandom.js"></script>
+	<script src="BigInteger.init2.js"></script>
+	<script src="RSA.init2.js"></script>
+
+	<script src="../nonstructured/nonstructured.js"></script>
+	<script src="BigInteger.init3.js"></script>
+	<script src="RSA.init3.js"></script>
+
+	<script src="Cipher.js"></script>
+	<script src="SOAEP.js"></script>
+	<script src="RSAKeyFormat.js"></script>
+	<script src="BitPadding.js"></script>
+
+	<script>
+	    __unit( "RSA.sample1.html" );
+	    __uses( "BigInteger.init1.js" );
+	    __uses( "BigInteger.init2.js" );
+	    __uses( "RSA.init1.js" );
+	    __uses( "RSA.init2.js" );
+	    __uses( "RSA.init3.js" );
+	    __uses( "RSAKeyFormat.js" );
+
+	    // import
+	    var BigInteger = __import( this,"titaniumcore.crypto.BigInteger" );
+	    var RSA = __import( this,"titaniumcore.crypto.RSA" );
+            var RSAKeyFormat = __import( packageRoot, "titaniumcore.crypto.RSAKeyFormat" );
+
+	    RSA.installKeyFormat( RSAKeyFormat );
+
+            // install key format.
+
+	    // main
+	    var timerID = null;
+	    var radioIndex=0;
+	    var radioCount = 4;
+	    function rotateRadio(){
+		radioIndex = ( radioIndex +1 ) % 4;
+		for ( var i=0; i<radioCount; i++ ) {
+		    document.form1["r"+i].checked = false;
+		}
+		document.form1["r"+radioIndex].checked = true;
+	    }
+	    function outputTrace(v){
+		var d = iframe.document;
+		d.open();
+		d.write( "<html><body><pre>");
+		d.write( v );
+		d.write( "</pre></body></html>");
+		d.close();
+	    }
+	    function outputTrace2(v){
+		document.form1.indicator.value=v;
+	    }
+	    function nextBytes( bs ) {
+		for ( var i=0; i<bs.length; i++ ) {
+		    bs[i]= Math.floor( Math.random() * 256 );
+		}
+		return bs;
+	    }
+	    function variableText( rsaKey, bytelen ) {
+		var text =  nextBytes( new array( bytelen ) );
+		// text.unshift(0);
+		text[0] &= 0x7f;
+		// text[0] = 0x00;
+
+		var text = new BigInteger( text );
+		return testCipher( rsaKey, text );
+	    }
+
+	    function testCipher( rsaKey, bitext ) {
+		var text = bitext;
+		var encrypted = rsaKey.processPublic( text );
+		var decrypted = rsaKey.processPrivate( encrypted );
+
+		function Result() {
+		    this.text = function(){
+			return text;
+		    };
+		    this.encrypted = function() {
+			return encrypted;
+		    };
+		    this.decrypted = function() {
+			return decrypted;
+		    };
+		    this.toString = function(){
+			var s = "";
+			s+=( "t:" + text.     toString(16) );
+			s+="\r\n";
+			s+=( "e:" + encrypted.toString(16) );
+			s+="\r\n";
+			s+=( "d:" + decrypted.toString(16) );
+			s+="\r\n";
+			if ( this.result() ) {
+			    s+="OK\r\n";
+			    s+="\r\n";
+			} else {
+			    s+="NG\r\n";
+			    s+="\r\n";
+			}
+			return s;
+		    };
+		    this.lengthCheck = function() {
+			var v = text.compareTo( rsaKey.n ) ;
+			if ( v<0 ) {
+			    // s+=( "text < n" );
+			    // s+="\r\n";
+			    return "text < n";
+			} else if (v==0) {
+			    // s+=( "text == n !!!!" );
+			    // s+="\r\n";
+			    return "n=text";
+			} else {
+			    // s+=( "n < text !!!!" );
+			    // s+="\r\n";
+			    return "n<text";
+			}
+		    };
+		    this.result = function(){
+			if ( text.compareTo( decrypted ) == 0 ) {
+			    return true;
+			} else {
+			    return false;
+			}
+		    };
+		};
+		return new Result();
+	    }
+	    function StringBuilder() {
+		this.value = "";
+		this.append = function(v){
+		    this.value += v.toString();
+		    return this;
+		};
+		this.toString = function() {
+		    return this.value;
+		};
+	    }
+	    function executeTest(){
+		if ( timerID != null ) {
+		    return;
+		}
+		var keylen = parseInt( document.form1.keylen.value );
+		var exp = parseInt( document.form1.exp.value );
+
+		var rsaKey = new RSA();
+		var resultList = [];
+		var testCount=10;
+
+		var progress = function(c){
+		    if ( c % 4 == 0 ) {
+			rotateRadio();
+		    }
+		    if ( c % 64 == 0 ) {
+			outputTrace2( "processing..." + c );
+		    }
+		};
+		var result = function( rsa ) {
+		};
+		var finalization = function() {
+		    resultList.push( variableText( rsaKey, keylen / 8 ) );
+		    return --testCount<=0;
+		}
+		var done = function( succeeded, count, time ,startTime, finishTime ) {
+		    timerID = null;
+
+		    var s = new StringBuilder();
+
+		    function add( caption, message ) {
+			s.append( "<h2>" );
+			s.append( caption );
+			s.append( "</h2>" );
+			s.append( "<blockquote>" );
+			s.append( message );
+			s.append( "</blockquote>" );
+		    }
+		    function col( caption, message ) {
+			s.append( "<tr>")
+			s.append( "<td>")
+			s.append( caption )
+			s.append( "</td>")
+			s.append( "<td>")
+			s.append( message )
+			s.append( "</td>")
+			s.append( "</tr>")
+		    }
+
+		    s.append( "<html>" );
+		    s.append( "<head>" );
+		    s.append( "<style>" );
+		    s.append( "h1 { font-size:15px; }" );
+		    s.append( "h2 { font-size:12px; }" );
+		    s.append( "</style>" );
+		    s.append( "</head>" );
+		    s.append( "<body>" );
+		    s.append( "<h1>" );
+		    s.append( "<h1>" );
+		    s.append( "a RSA key was successfully generated." );
+		    s.append( "</h1>" );
+
+		    s.append( "<h2>" );
+		    s.append( "RSA Key" );
+		    s.append( "</h2>" );
+		    s.append( "<blockquote>" );
+		    s.append( "<table>" );
+		    s.append( "<tr>" );
+		    s.append( "<td>" );
+		    // s.append( "<a target='_top' href='RSA.sample2.html?"
+		    //     +"n="+base64x_encode( rsaKey.n.toByteArray() ) + "&"
+		    //     +"e="+                rsaKey.e                 + "&"
+		    //     +"d="+base64x_encode( rsaKey.d.toByteArray() ) + "&"
+		    //     + "'>Encryption/Decryption Test</a>" 
+		    // );
+		    s.append( "<a target='_top' href='RSA.sample2.html?"
+			+"pr="+base64x_encode( rsaKey.privateKeyBytes() ) + "&"
+			+"pu="+base64x_encode( rsaKey.publicKeyBytes() ) + "&"
+			+"e=" +                rsaKey.e                  + "&"
+			+"pa=" +             ( rsaKey.n.bitLength()<256 ? "0" : "1") + "&"
+			+"dum=he"
+			+ "'>Encryption/Decryption Test</a>" 
+		    );
+		    s.append( "</td>" );
+		    s.append( "</tr>" );
+		    s.append( "</table>" );
+		    s.append( "<table border=1>" );
+			col( "n="    , ( rsaKey.n     == null ? "" : rsaKey.n    .toString(16) + "(" + rsaKey.n.bitLength() + ")" ) );
+			col( "e="    , ( rsaKey.e     == null ? "" : rsaKey.e    .toString(16) ) );
+			col( "d="    , ( rsaKey.d     == null ? "" : rsaKey.d    .toString(16) + "(" + rsaKey.d.bitLength() + ")" ) );
+			col( "p="    , ( rsaKey.p     == null ? "" : rsaKey.p    .toString(16) ) );
+			col( "q="    , ( rsaKey.q     == null ? "" : rsaKey.q    .toString(16) ) );
+			col( "dmp1=" , ( rsaKey.dmp1  == null ? "" : rsaKey.dmp1 .toString(16) ) );
+			col( "dmq1=" , ( rsaKey.dmq1  == null ? "" : rsaKey.dmq1 .toString(16) ) );
+			col( "coeff=", ( rsaKey.coeff == null ? "" : rsaKey.coeff.toString(16) ) );
+		    s.append( "</table>" );
+		    s.append( "</blockquote>" );
+
+		    add( "Elapsed Time", time + "ms" );
+		    add( "Step Count", count );
+		    add( "Start Time", startTime.toString() );
+		    add( "Finished Time", finishTime.toString() );
+
+		    var allOK = true;
+		    for ( var tc=0; tc<resultList.length; tc++ ) {
+			var result = resultList[tc];
+			if ( ! result.result() ) {
+			    allOK = false;
+			}
+		    }
+
+		    if ( 0<resultList.length ) {
+			add( "Variable Text Test :", allOK ? "All OK" : "Error Found" );
+			add( "Test Report :", "" );
+		    }
+
+		    for ( var tc=0; tc<resultList.length; tc++ ) {
+			var result = resultList[tc];
+			s.append( "<h2>" );
+			s.append( "Variable Text Test " + (tc+1) );
+			s.append( "</h2>" );
+			s.append( "<blockquote>" );
+			s.append( "<table border=1>" );
+			col( "text",result.text().toString(16) );
+			col( "encrypted",result.encrypted().toString(16) );
+			col( "decrypted",result.decrypted().toString(16) );
+			col( "result",result.result() ? "OK":"NG");
+			s.append( "</table>" );
+			s.append( "</blockquote>" );
+		    }
+
+		    s.append( "</body>" );
+		    s.append( "</html>" );
+
+		    outputTrace( s.toString() );
+		    outputTrace2( "");
+		};
+
+		// var generator = rsaKey.stepping_generate( keylen, exp );
+		// timerID = ( [ generator, /*finalization,*/ EXIT ] ).ready().frequency(1).timeout(1).progress(progress).done(done).go();
+		// timerID = rsaKey.generateAsync( keylen, exp, progress, result, done );
+		// timerID = RSAMessageFormat.generateAsync( keylen, exp, progress, result, done );
+		timerID = rsaKey.generateAsync( keylen, exp, progress, result, done );
+
+	    }
+	    function cancelTest(){
+		if ( timerID != null ) {
+		    var id = timerID;
+		    timerID = null;
+		    clearInterval( id );
+		    outputTrace( "Canceled." );
+		    outputTrace2( "");
+		}
+	    }
+	    var i=0;
+	    function tst(){
+		iframe.document.open();
+		iframe.document.write("<html><body>"+(i++)+"</body></html>");
+		iframe.document.close();
+	    }
+	</script>
+	<style>
+	    h1 {
+		font-size:20px;
+	    }
+	    h2 {
+		font-size:12px;
+	    }
+	</style>
+    </head>
+    <body>
+	<h1>JavaScript Asynchronous RSA Key Generation futuring Cancelation</h1>
+	<p>
+	This page is a demonstration of JavaScript RSA key generation which 
+	is executed asynchronously. Generally RSA key generation takes
+	several minutes. It occasionally takes several hours. A direct
+	implementation of RSA key generation makes web browsers freezed
+	and generates a lot of warning message boxes.</p>
+	<p>
+	This demonstration generates RSA key asynchronously.  It will
+	generate even very long lengthed RSA key such as 8192bit without freezing your browser
+	since it is executed asynchronously.  Cancelation is also available.
+	Try the cancel button.
+	</p>
+	<form name="form1" >
+	    <b>Configuration</b><br>
+	    <blockquote>
+	    <b>exponent</b>
+	    <select name="exp">
+		<option value="3">3</option>
+		<option value="11">11</option>
+		<option value="13">13</option>
+		<option value="17">17</option>
+		<option value="19">19</option>
+		<option value="65537" selected >65537</option>
+	    </select>
+	    /
+	    <b>key length</b>
+	    <select name="keylen">
+		<option value="16">16bit</option>
+		<option value="32">32bit</option>
+		<option value="64">64bit</option>
+		<option value="128">128bit</option>
+		<option value="256" selected>256bit</option>
+		<option value="512">512bit</option>
+		<option value="1024">1024bit</option>
+		<option value="2048">2048bit</option>
+		<option value="4096">4096bit</option>
+		<option value="8192">8192bit</option>
+		<option value="16384">16384bit</option>
+		<option value="32768">32768bit</option>
+		<option value="65536">65536bit</option>
+	    </select>
+
+
+	    <input type="button" name="generate" value="Generate" onClick="executeTest()" >
+	    <input type="button" name="cancel" value="Cancel" onClick="cancelTest()">
+	    <!-- <input type="button" name="test" value="Test" onClick="tst()"> -->
+	    </blockquote>
+	    <b>Result</b>
+	    <input type="radio" name="r0" value="0" >
+	    <input type="radio" name="r1" value="1" >
+	    <input type="radio" name="r2" value="2" >
+	    <input type="radio" name="r3" value="3" >
+	    <input type="text" name="indicator" value"">
+	    <br>
+	    <blockquote>
+		<!--<textarea name="area" cols=80 rows=20></textarea><br>-->
+	    <iframe name="iframe" width=900 height=300 ></iframe>
+	    </blockquote>
+	</form>
+	<b> Contacts </b><br>
+	<blockquote>
+	Ats Oka [ <a href="http://oka.nu">http://oka.nu</a> ]
+	</blockquote>
+    </body>
+</html>
+
+<!-- vim: set noexpandtab ts=8: -->

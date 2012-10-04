@@ -1,0 +1,102 @@
+<html>
+<head>
+<title>A RSA Key Binary Encoder/Decoder</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    A RSA Key Binary Encoder/Decoder
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                        Jan 8,2009
+
+    RSAKeyFormat.js is a library to encode/decode a RSA key into specific
+    format.  There can be a lot of expressions which expresses A RSA key.
+    This library defines a schema to express a RSA key as following :
+
+        PRIVATE KEY                PUBLIC KEY          
+                                                       
+        NAME       TYPE            NAME       TYPE     
+0x0000  ------------------         ------------------  
+        keysize    int             keysize    int      
+0x0004  ------------------         ------------------  
+        sizeof(n)  int             sizeof(n)  int      
+0x0008  ------------------         ------------------  
+                                                       
+           n       byte[]             n       byte[]   
+                                                       
+        ------------------         ------------------  
+        sizeof(e)  int             sizeof(e)  int      
+        ------------------         ------------------  
+                                                       
+           e       byte[]             e       byte[]   
+                                                       
+        ------------------         ------------------  
+        sizeof(d)  int                                 
+        ------------------                             
+                                                       
+           d       byte[]                              
+                                                       
+        ------------------                             
+
+    All integer values are stored in big endian byte order.
+
+
+This RSAKeyFormat.js defines the RSAKeyFormat class. The RSAKeyFormat class
+implements KeyFormat interface. For further information, see
+<a href="./KeyFormat.interface.txt">KeyFormat.interface.txt</a>.
+
+
+Link
+    &lt;script src="./tools/packages.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init1.js"&gt;&lt;/script&gt;
+    &lt;script src="./tools/binary.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/SOAEP.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/RSAKeyFormat.js"&gt;&lt;/script&gt;
+
+Import
+    var RSAKeyFormat = __import( this, "titaniumcore.crypto.RSAKeyFormat" );
+
+
+Note
+    This class is a static class. Do not instantiate this class.
+
+
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

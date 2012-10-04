@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>About jsSHA.js</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    About jsSHA.js
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]
+
+
+jsSHA.js is written by Brian Turek [ <a href="http://sourceforge.net/users/caligatio">http://sourceforge.net/users/caligatio</a> ].
+
+    &gt; A JavaScript implementation of the SHA family of hashes, as defined in FIPS PUB 180-2
+    &gt; Version 1.1 Copyright Brian Turek 2008
+    &gt; Distributed under the BSD License
+    &gt; See <a href="http://jssha.sourceforge.net/">http://jssha.sourceforge.net/</a> for more information
+    &gt;
+    &gt; Several functions taken from Paul Johnson
+
+
+Atsushi Oka[ <a href="http://oka.nu/">http://oka.nu/</a> ] has modified at following :
+    1. Add package management function.
+    2. Separate object-oriented interface and implementation.
+
+    November 10,2008
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>interface MessageFormat</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    interface MessageFormat
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                      Jan 15,2009
+
+
+This document describes about MessageFormat interface.
+For further information of the interface files, see <a href="./readme.interface.txt">readme.interface.txt</a>.
+
+    /*
+     * MessageFormat - This interface defines methods that is necessary for RSA
+     * encryption and decryption.  A class that implements this interface must
+     * define an RSA encrypting/decryption scheme.
+     *
+     */
+    interface MessageFormat {
+        /*
+         * Encrypts/Decrypts a message with the specified RSA object.  The RSA
+         * object specified in "rsa" parameter must be initialized by a proper
+         * RSA key.
+         */
+        byte[] publicEncrypt( RSA rsa, byte[] text );
+        byte[] publicDecrypt( RSA rsa, byte[] text );
+        byte[] privateEncrypt( RSA rsa, byte[] text );
+        byte[] privateDecrypt( RSA rsa, byte[] text );
+
+
+
+        /*
+         * Encrypts/Decrypts a message with the specified RSA object
+         * asynchronously. There are three callback functions that can be
+         * specified. 
+         * 
+         *      _progress : specifies a closure that will be executed when each
+         *      step of the process is done. 
+         *
+         *          function _progress(c);
+         *
+         *      _result : specifies a closure that will receive the
+         *      encrypted/decrypted message.
+         * 
+         *          function _result(byte[] message)
+         *
+         *      _done : specifies a closure that will be executed when the
+         *      entire process is done.
+         *
+         *          function _done( ... ); // same as done function of nonstructured.js
+         *
+         *          For further information about nonstructured.js, please refer this file.
+         *          <a href="../nonstructured/nonstructured.readme.txt">nonstructured.readme.txt</a>
+         *
+         * Returns a timer id.
+         */
+        int publicEncryptAsync( RSA rsa, byte[] text, 
+                Function _progress, Function _result, Function _done );
+        int publicDecryptAsync( RSA rsa, byte[] text, 
+                Function _progress, Function _result, Function _done );
+        int privateEncryptAsync( RSA rsa, byte[] text, 
+                Function _progress, Function _result, Function _done );
+        int privateDecryptAsync( RSA rsa, byte[] text, 
+                Function _progress, Function _result, Function _done );
+
+
+        /*
+         * Calculate the maximum length of a message that the RSA object
+         * can encrypt or decrypt. A proper RSA key must be set in the RSA
+         * object in the rsa parameter. */
+        int publicEncryptMaxSize( RSA rsa );
+        int privateEncryptMaxSize( RSA rsa );
+    }
+
+
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>

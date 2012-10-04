@@ -1,0 +1,294 @@
+<html>
+<head>
+<title>BigInteger</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+border:0px;
+background-image:url(http://ats.oka.nu/background.png);
+background-repeat:repeat-y;
+background-position: center center;
+background-color:#ffffff;
+font-family: "Arial", sans-serif;
+/*font-family: sans-serif; */
+}
+#d1 {
+text-align:center;
+width:100%;
+}
+#d2 {
+border:0px solid gray;
+text-align:left;
+min-width:none;
+width:650px;
+margin-left:auto;
+margin-right:auto;
+padding:30px;
+}
+</style>
+</head>
+<body>
+<div id="d1">
+<pre id="d2">
+
+
+    BigInteger
+
+                                                           Titaniumcore Project
+================================================================================
+Atsushi Oka [ <a href="http://oka.nu/">http://oka.nu/</a> ]                                        Jan 8,2009
+
+BigInteger is a class which manages variable length integer number which is
+analogous to BigInteger class of Java Platform API.
+
+BigInteger is defined in following three files.
+    BigInteger.init1.js
+    BigInteger.init2.js
+    BigInteger.init3.js
+
+The class is divided into three separated files.
+BigInteger.init1.js defines functions for decryption. 
+BigInteger.init2.js defines functions for encryption and key-generation. 
+BigInteger.init3.js defines additional functions for asynchronous key-generation.
+
+Link
+    &lt;script src="./cipher/BigInteger.init1.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init2.js"&gt;&lt;/script&gt;
+    &lt;script src="./cipher/BigInteger.init3.js"&gt;&lt;/script&gt;
+
+Import
+    var BigInteger = __import( this,"titaniumcore.crypto.BigInteger" );
+
+
+Constructors
+    ( *** defined in init1 *** )
+
+    new BigInteger(number)
+        Creates a new BigInteger object from number.  The parameter "number"
+        must be equal or greater than -1* BigInteger.DV and less than
+        BigInteger.DV.
+
+    new BigInteger(string)
+        Creates a new BigInteger object from decimal string.
+
+    new BigInteger(array)
+        Creates a new BigInteger object from a byte array that contains
+        binary representation of an integer in big-endian byte order.
+
+    new BigInteger(string,radix)
+        Creates a new BigInteger object from a string.  The string will be
+        translated in the specified radix and stored to the newly created
+        BigInteger object.
+
+    ( *** defined in init2 *** )
+
+    new BigInteger(nbit,random)
+        Creates a new BigInteger object that initialized by
+        a randomly generated number with the specified nbit length.
+        The parameter random must be a SecureRandom object.
+
+    new BigInteger( nbit, certanity, random)
+        Creates a new BigInteger object that initialized by a randomly
+        generated number with the specified nbit length that is probably
+        prime.
+
+Methods
+
+    ( *** defined in init1 *** )
+
+    function toString(radix)
+        Convert this value to a string with specified radix number and returns.
+
+    function negate()
+        Returns -this.
+
+    function abs()
+        Returns absolute value of this BigInteger object.
+
+    function compareTo(v)
+        Compare this value with a specific object.
+        Returns a number less than zero if this object is less than v.
+        Returns zero if this object with the specified object is equal.
+        Returns a number greater than zero if this object is greater than v.
+
+    function bitLength()
+        Returns the number of bits in this object.
+
+    function mod(v)
+        Returns a remainder of this value divided by v. 
+
+    function modPowInt(e,m)
+        Returns modulo exponentiation of this object. Parameter m is a
+        BigInteger object and specifies a modulo.  Parameter e is a Number
+        object and specifies an exponent. Parameter e must be a Number
+        object and must be equal or greater than e and less than 2^32.
+
+
+    ( *** followings are defined in init2 *** )
+
+    function modPow(e,m)
+        Returns modulo exponentiation of this object.
+        Parameter e is a BigInteger object and specifies an exponent.
+        Parameter m is a BigInteger object and specifies a modulo.
+
+    function gcd(v)
+        Returns the greatest common divisor of this object and v.
+
+    function modInverse(m)
+        Returns 1 divided by this object
+
+    function isProbablePrime(t)
+        Test primality with certainty t.
+
+    function toByteArray()
+        Convert this object to a byte array in big-endian byte order.
+
+
+    # ( I think, some of following methods are not tested well. Use with special care. ) #
+
+    function clone()
+        Returns a clone of this object.
+
+    function intValue()
+        Converts this object to Number object and returns it.
+
+    function byteValue()
+        Converts this object to a byte value and returns.
+
+    function shortValue()
+        Converts this object to a short value and returns.
+
+    function signum()
+        Returns -1 if the value of this object represent is less than zero.
+        Returns 0 if the value of this object represent is zero.
+        Returns +1 if the value of this object represent is greater than zero.
+
+    function equals(a)
+        Returns true if the value of a is equal with this object. Otherwise
+        returns false.
+
+    function max(a)
+        Returns true if this value is greater than the value of a. Otherwise
+        returns false.
+
+    function min(a)
+        Returns true if this value is less than the value of a. Otherwise
+        returns false.
+
+    function and(a)
+    function or(a)
+    function xor(a)
+    function andNot(a)
+    function not()
+        The bitwise operators.
+
+    function ope_and(a)
+    function ope_or(a)
+    function ope_xor(a)
+    function ope_andNot(a)
+    function ope_not()
+        Aliases of the bitwise operators.  This set of alias is
+        intended to convey compatibility for ActionScript since keywords
+        "and", "or",etc. are reserved keyword for ActionScript.
+
+    function shiftLeft()
+        A left shift operator.
+
+    function shiftRight()
+        A right shift operator.
+
+    function getLowestSetBit()
+    function bitCount()
+    function testBit(n)
+    function changeBit(n,op)
+    function setBit(n)
+    function clearBit(n)
+    function flipBit(n)
+        Various bit operation.
+
+    function add(a)
+    function subtract(a)
+    function multiply(a)
+    function divide(a)
+    function remainder(a)
+    function divideAndRemainder(a)
+    function pow(e)
+        Various numerical calculation operators.
+
+    function ope_add(a)
+    function ope_subtract(a)
+    function ope_multiply(a)
+    function ope_divide(a)
+    function ope_remainder(a)
+    function ope_divideAndRemainder(a)
+    function ope_pow(e)
+        Aliases for the numerical calculation operators. This set of alias is
+        intended to convey compatibility for ActionScript since keywords
+        "and", "or",etc. are reserved keyword in ActionScript.
+
+
+    ( *** defined in init3 *** )
+
+    function stepping_fromNumber1( bitLength, certainty, rnd )
+    function stepping_isProbablePrime(t)
+    function stepping_millerRabin(t)
+    function stepping_modPow(e,m)
+
+        These functions are prefixed with "stepping_". They work as if the
+        function which name is without the prefix. The difference is that they
+        work asynchronously.
+
+        Their functions return a closure object. User should run it with a
+        framework for asynchronous execution "nonstructured.js"
+
+        For further information , see <a href="../nonstructured/nonstructured.readme.txt">nonstructured.readme.txt</a>.
+
+
+Constants
+    ( *** defined in init1 *** )
+
+    BigInteger.ZERO
+        A BigInteger object that represent zero.
+
+    BigInteger.ONE
+        A BigInteger object that represent one.
+
+
+
+ACKNOWLEDGMENT
+================================================================================
+Following files were originally written by Tom Wu :
+
+    SecureRandom.js
+    BigInteger.init1.js
+    BigInteger.init2.js
+    BigInteger.init3.js
+    RSA.init1.js
+    RSA.init2.js
+    RSA.init3.js
+
+    Copyright (c) 2005  Tom Wu
+    All Rights Reserved.
+    <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">http://www-cs-students.stanford.edu/~tjw/jsbn/</a>
+
+    See "LICENSE" for details.
+    <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/LICENSE">http://www-cs-students.stanford.edu/~tjw/jsbn/LICENSE</a>
+
+
+Additionally Atushi Oka has done following works :
+    - Packaged all classes
+    - Added asynchronous execution feauture
+    - Fixed bugs
+    - Revised ambiguous class interface on constructors/methods.
+    - Adapted to Flash ActionScript 
+      ( "add" is a reserved identifier in ActionScript. etc.)
+
+================================================================================
+
+// vim:expandtab:
+
+</pre>
+</div>
+</body>
+</html>
