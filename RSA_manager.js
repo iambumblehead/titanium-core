@@ -1,5 +1,5 @@
 // Filename: RSA_manager.js  
-// Timestamp: 2012.10.04-09:25:38 (last modified)  
+// Timestamp: 2013.02.10-16:57:48 (last modified)  
 // Author(s): Ots Oka, Bumblehead (www.bumblehead.com)  
 // Requires: BigInteger_init1.js, BigInteger_init2.js,  
 // RSA_init1.js, RSA_init2.js, RSA_init3.js, RSAKeyFormat.js,
@@ -7,10 +7,27 @@
 //
 // http://ats.oka.nu/titaniumcore/js/crypto/RSA.sample1.html
 
+var BigInteger_init1 = require('./lib/BigInteger_init1');
+var BigInteger_init2 = require('./lib/BigInteger_init2');
+
+var RSA_init1 = require('./lib/RSA_init1');
+var RSA_init2 = require('./lib/RSA_init2');
+var RSA_init3 = require('./lib/RSA_init3');
+
+var RSAKeyFormat = require('./lib/RSAKeyFormat');
+
+var RSAMessageFormatSOAEP = require('./lib/RSAMessageFormatSOAEP');
+
+var RSAMessageFormatBitPadding = require('./lib/RSAMessageFormatBitPadding');
+
+var binary = require('./lib/tools/binary');
+
+var RSA = RSA_init1;
+var BigInteger = BigInteger_init1;
 
 
 var RSA_manager = (function () {
-
+/*
   __unit( "RSA.sample1.html" );
   __uses( "BigInteger.init1.js" );
   __uses( "BigInteger.init2.js" );
@@ -21,7 +38,8 @@ var RSA_manager = (function () {
 
   __uses( "RSAMessageFormatSOAEP.js" );
   __uses( "RSAMessageFormatBitPadding.js" );
-
+*/
+/*
   // import
   var BigInteger = __import( this,"titaniumcore.crypto.BigInteger" );
   var RSA = __import( this,"titaniumcore.crypto.RSA" );
@@ -30,6 +48,7 @@ var RSA_manager = (function () {
   var RSAMessageFormatBitPadding = __import( this, "titaniumcore.crypto.RSAMessageFormatBitPadding" );
 
   var RSAKeyFormat = __import( packageRoot, "titaniumcore.crypto.RSAKeyFormat" );
+*/
 
   RSA.installKeyFormat( RSAKeyFormat );
 
@@ -159,15 +178,15 @@ var RSA_manager = (function () {
       var rsa = new RSA(), rawPubKey;
       rsa.messageFormat = RSAMessageFormatBitPadding;      
       //rsa.messageFormat = RSAMessageFormatSOAEP;
-      rsa.publicKeyBytes(base64x_decode(pubKey));
-      return base64x_encode(rsa.publicEncrypt(message));
+      rsa.publicKeyBytes(binary.base64x_decode(pubKey));
+      return binary.base64x_encode(rsa.publicEncrypt(message));
     },
 
     getPriKeyDecryptedAsync : function (priKeyObj, cipher, fn) {
       var rawPubKey, result,
           onProgressFun = function () {},
           onDecryptResultFun = function (value) { 
-            result = utf82str(value); 
+            result = binary.utf82str(value); 
             fn(null, result); 
           },
           onPrivateDoneFun = function () {};
@@ -179,7 +198,7 @@ var RSA_manager = (function () {
       var rsa = new RSA(), rawPubKey, result,
           onProgressFun = function () {},
           onDecryptResultFun = function (value) { 
-            result = utf82str(value); 
+            result = binary.utf82str(value); 
             fn(null, result); 
           },
           onPrivateDoneFun = function () {};
@@ -191,8 +210,8 @@ var RSA_manager = (function () {
     },
 
     test_pubKeyEncrypt_priKeyDecrypt : function (rsaKey, fn) {
-      var priKey = base64x_encode( rsaKey.privateKeyBytes() );
-      var pubKey = base64x_encode( rsaKey.publicKeyBytes() );
+      var priKey = binary.base64x_encode( rsaKey.privateKeyBytes() );
+      var pubKey = binary.base64x_encode( rsaKey.publicKeyBytes() );
 
       var cipher = this.getPubKeyEncrypted(pubKey, 'test message');
       this.getPriKeyDecryptedAsync(priKey, cipher, function (err, value) {
@@ -247,9 +266,19 @@ var RSA_manager = (function () {
     cancel : function () {
 
     }
+/*
+    systemTimers : (function () {
+      if (typeof window === 'object') {
+        return window;
+      } else {
+        return require('Timers');
+      }
+    }())
+*/
   };
 
 }());
+
 
 
 var success = 0,
@@ -259,9 +288,10 @@ var success = 0,
   if (!x--) return null;
   RSA_manager.execute(1024, '3', function(){}, function (RSAObj) {
     // response is an RSA key object, given from `new RSA()`
+    //RSA_manager.systemTimers.setTimeout(function () { 
     setTimeout(function () { 
-      var priKey = base64x_encode( RSAObj.privateKeyBytes() ),
-          pubKey = base64x_encode( RSAObj.publicKeyBytes() ),
+      var priKey = binary.base64x_encode( RSAObj.privateKeyBytes() ),
+          pubKey = binary.base64x_encode( RSAObj.publicKeyBytes() ),
           cipher = RSA_manager.getPubKeyEncrypted(pubKey, 'test message');      
       RSA_manager.getPriKeyDecryptedAsync(priKey, cipher, function (err, value) {
          if (value === 'test message') {
